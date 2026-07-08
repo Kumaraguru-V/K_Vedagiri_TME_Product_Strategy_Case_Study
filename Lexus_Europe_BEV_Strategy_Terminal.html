@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lexus Europe — BEV Strategy Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#090A0C; --bg2:#0E0F12; --panel:#131519; --panel2:#171A1F; --line:#23262D; --line2:#1B1E23;
+  --text:#E9EAED; --muted:#8B9099; --dim:#5B616B;
+  --bronze:#C2A46E; --bronze2:#9A7B4F; --bronzeDim:#6f5f42;
+  --steel:#6E7C8F; --steel2:#8A96A6; --navy:#4A5568;
+  --up:#4FB286; --down:#D9645A; --amber:#C99A44;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:"Inter",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden}
+.mono{font-family:"IBM Plex Mono",monospace}
+.serif{font-family:"Fraunces",Georgia,serif}
+a{color:inherit;text-decoration:none}
+
+/* scroll progress */
+#prog{position:fixed;top:0;left:0;height:2px;width:0;background:var(--bronze);z-index:200}
+
+/* ticker */
+#ticker{position:fixed;top:0;left:0;right:0;height:30px;background:#000;border-bottom:1px solid var(--line);
+  overflow:hidden;z-index:150;display:flex;align-items:center}
+#ticker .track{display:inline-flex;white-space:nowrap;animation:scroll 44s linear infinite;will-change:transform}
+#ticker .it{padding:0 26px;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);letter-spacing:.02em}
+#ticker .it b{color:var(--text);font-weight:600}
+#ticker .up{color:var(--up)} #ticker .dn{color:var(--down)}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* nav */
+#nav{position:fixed;top:30px;left:0;right:0;height:52px;background:rgba(9,10,12,.86);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);z-index:140;display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px}
+#nav .brand{display:flex;align-items:center;gap:12px}
+#nav .mark{font-family:"Fraunces",serif;font-size:17px;letter-spacing:.02em;color:var(--text)}
+#nav .mark b{color:var(--bronze);font-weight:500}
+#nav .tag{font-family:"IBM Plex Mono",monospace;font-size:9px;color:var(--dim);letter-spacing:.14em;
+  border-left:1px solid var(--line);padding-left:12px;text-transform:uppercase}
+#nav .links{display:flex;gap:2px}
+#nav .links a{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.05em;color:var(--muted);
+  padding:7px 11px;border-radius:5px;transition:.15s;text-transform:uppercase}
+#nav .links a:hover{color:var(--text);background:var(--panel)}
+#nav .links a.on{color:var(--bronze)}
+@media(max-width:920px){#nav .links{display:none}#nav .tag{display:none}}
+
+/* layout */
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+main{padding-top:82px}
+section{padding:58px 0;border-top:1px solid var(--line2)}
+section:first-of-type{border-top:none}
+
+.shead{display:flex;align-items:baseline;gap:16px;margin-bottom:8px}
+.sidx{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--bronze);font-weight:600}
+.stitle{font-family:"Fraunces",serif;font-size:26px;font-weight:500;letter-spacing:-.01em;line-height:1.15}
+.slede{color:var(--muted);font-size:14.5px;max-width:820px;margin:10px 0 30px;line-height:1.6}
+.slede b{color:var(--text);font-weight:600}
+
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.22em;color:var(--bronze);
+  text-transform:uppercase;display:flex;align-items:center;gap:9px}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--bronze)}
+
+/* hero */
+#hero{padding:46px 0 58px}
+#hero h1{font-family:"Fraunces",serif;font-size:44px;font-weight:500;line-height:1.08;letter-spacing:-.015em;
+  margin:20px 0 0;max-width:1000px}
+#hero h1 b{color:var(--bronze);font-weight:500}
+#hero .sub{color:var(--muted);font-size:16px;max-width:760px;margin-top:20px;line-height:1.6}
+#hero .sub b{color:var(--text)}
+.recpills{display:flex;gap:14px;margin-top:26px;flex-wrap:wrap}
+.pill{border:1px solid var(--line);border-radius:10px;padding:13px 17px;background:var(--panel);min-width:250px;flex:1}
+.pill .ph{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.1em;color:var(--bronze);text-transform:uppercase}
+.pill .pn{font-weight:700;font-size:15px;margin-top:5px}
+.pill .pd{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.45}
+.pill.b1{border-left:3px solid var(--steel)} .pill.b2{border-left:3px solid var(--bronze)}
+
+/* kpi strip */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:30px}
+.kpi{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:linear-gradient(180deg,var(--panel),var(--bg2));position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--bronze)}
+.kpi .v{font-family:"Fraunces",serif;font-size:30px;font-weight:500;letter-spacing:-.01em}
+.kpi .v small{font-family:"Inter";font-size:14px;color:var(--muted);font-weight:600}
+.kpi .l{color:var(--muted);font-size:11.5px;margin-top:6px;line-height:1.4}
+@media(max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}}
+
+/* grid + panels */
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:1fr 1fr}
+.g12{grid-template-columns:1.15fr .85fr}
+.g21{grid-template-columns:1fr 1fr}
+@media(max-width:820px){.g2,.g12,.g21{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:20px}
+.exlbl{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.06em;color:var(--muted);
+  text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.exlbl b{color:var(--bronze)}
+.sowhat{border-left:3px solid var(--bronze);background:var(--panel2);border-radius:0 10px 10px 0;
+  padding:15px 20px;margin-top:22px;font-size:14px;color:var(--muted);line-height:1.6}
+.sowhat b{color:var(--bronze);font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;margin-right:8px}
+.sowhat .t{color:var(--text)}
+
+/* chart svg */
+svg{display:block;width:100%;height:auto;overflow:visible}
+.axoff{stroke:var(--line);stroke-width:1}
+.gridln{stroke:var(--line2);stroke-width:1}
+.clab{font-family:"IBM Plex Mono",monospace;font-size:10px;fill:var(--muted)}
+.vlab{font-family:"IBM Plex Mono",monospace;font-size:10px;fill:var(--text);font-weight:600}
+.dlab{font-family:"IBM Plex Mono",monospace;font-size:9px;fill:var(--dim)}
+
+/* table */
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);font-weight:600}
+td{padding:9px 10px;border-bottom:1px solid var(--line2);color:var(--muted);vertical-align:middle}
+tbody tr{transition:background .12s}
+tbody tr:hover{background:var(--panel2)}
+td .bn{color:var(--text);font-weight:600}
+.lexrow td{color:var(--bronze)!important}
+.lexrow .bn{color:var(--bronze)}
+.chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;
+  padding:2px 8px;border-radius:4px;color:#0a0b0d}
+.chip.h{background:var(--down)} .chip.m{background:var(--amber)} .chip.l{background:var(--steel)}
+.num{font-family:"IBM Plex Mono",monospace;color:var(--text)}
+
+/* right-to-win list */
+.rtw{display:flex;flex-direction:column;gap:14px}
+.rtw .it{display:flex;gap:12px}
+.rtw .dot{width:9px;height:9px;border-radius:2px;background:var(--bronze);margin-top:6px;flex:none}
+.rtw h4{font-size:13.5px;font-weight:700}
+.rtw p{color:var(--muted);font-size:12.5px;line-height:1.5;margin-top:2px}
+
+/* concept cards */
+.concepts{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:820px){.concepts{grid-template-columns:1fr}}
+.ccard{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel)}
+.ccard .top{padding:18px 20px;border-bottom:1px solid var(--line)}
+.ccard.serene .top{background:linear-gradient(120deg,rgba(194,164,110,.16),transparent)}
+.ccard.lz .top{background:linear-gradient(120deg,rgba(110,124,143,.16),transparent)}
+.ccard .ctag{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase}
+.ccard.serene .ctag{color:var(--bronze)} .ccard.lz .ctag{color:var(--steel2)}
+.ccard .cname{font-family:"Fraunces",serif;font-size:23px;font-weight:500;margin-top:6px}
+.ccard .csub{color:var(--muted);font-size:13px;margin-top:2px}
+.ccard .rows{padding:6px 20px 18px}
+.crow{display:grid;grid-template-columns:120px 1fr;gap:12px;padding:11px 0;border-bottom:1px solid var(--line2)}
+.crow:last-child{border-bottom:none}
+.crow .k{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.05em;color:var(--dim);text-transform:uppercase;padding-top:2px}
+.crow .val{font-size:13.5px;color:var(--text)}
+.crow .val.big{font-weight:700}
+.plogic{border:1px solid var(--line);border-radius:12px;background:var(--panel2);padding:18px 22px;margin-top:16px;
+  font-size:14px;color:var(--muted);line-height:1.6}
+.plogic b{color:var(--bronze);font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;margin-right:8px}
+
+/* timeline */
+.tl{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:8px 0 6px;position:relative}
+.tl::before{content:"";position:absolute;top:7px;left:6%;right:6%;height:2px;background:var(--line)}
+.tl .n{position:relative;padding:0 12px}
+.tl .d{width:14px;height:14px;border-radius:50%;background:var(--bronze);position:relative;z-index:2;margin-bottom:14px;box-shadow:0 0 0 4px var(--bg)}
+.tl .y{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:13px;color:var(--bronze)}
+.tl .tx{color:var(--muted);font-size:12px;margin-top:6px;line-height:1.45}
+.tl .n:nth-child(1) .d{background:var(--steel)} .tl .n:nth-child(2) .d{background:var(--steel2)}
+.tl .n:nth-child(4) .d{background:var(--text)}
+@media(max-width:820px){.tl{grid-template-columns:1fr 1fr}.tl::before{display:none}}
+
+/* investment / research lists */
+.ilist{display:flex;flex-direction:column;gap:13px}
+.ilist .it{display:flex;gap:11px}
+.ilist .dot{width:8px;height:8px;border-radius:2px;background:var(--bronze);margin-top:6px;flex:none}
+.ilist b{color:var(--text)}
+.ilist span{color:var(--muted);font-size:13px;line-height:1.5}
+
+.kgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.kbox{border-left:3px solid var(--bronze);background:var(--panel2);border-radius:0 8px 8px 0;padding:12px 14px}
+.kbox h4{font-size:13px;font-weight:700} .kbox p{color:var(--muted);font-size:11.5px;margin-top:3px}
+
+.gates{display:flex;flex-direction:column;gap:11px}
+.gate{display:flex;gap:14px;align-items:center}
+.gate .g{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;color:#0a0b0d;background:var(--bronze);
+  padding:7px 12px;border-radius:6px;flex:none}
+.gate p{color:var(--muted);font-size:13px}
+
+.ask{border:1px solid var(--bronze);background:linear-gradient(120deg,rgba(194,164,110,.14),transparent);
+  border-radius:12px;padding:18px 22px;margin-top:22px;display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
+.ask b{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;color:var(--bronze)}
+.ask span{color:var(--text);font-size:14.5px;line-height:1.55}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.rv.in{opacity:1;transform:none}
+
+footer{border-top:1px solid var(--line);padding:34px 0 50px;margin-top:20px}
+footer .src{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--dim);line-height:1.9}
+footer .dis{color:var(--muted);font-size:12px;margin-top:14px;max-width:760px;line-height:1.6}
+footer .by{color:var(--text);font-size:13px;margin-top:16px}
+footer .by b{color:var(--bronze)}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+
+<div id="ticker"><div class="track" id="tk"></div></div>
+
+<nav id="nav">
+  <div class="brand">
+    <span class="mark"><b>LEXUS</b> · EUROPE BEV STRATEGY</span>
+    <span class="tag">Product Strategy &amp; Concept Planning</span>
+  </div>
+  <div class="links">
+    <a href="#market">Market</a>
+    <a href="#compete">Competition</a>
+    <a href="#whitespace">White&nbsp;Space</a>
+    <a href="#concepts">Concepts</a>
+    <a href="#case">Business&nbsp;Case</a>
+    <a href="#gov">Governance</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <header id="hero">
+    <div class="eyebrow rv">Executive Summary · Internal Discussion</div>
+    <h1 class="serif rv">Lexus must convert its hybrid-era conquest lead into a <b>two-tier BEV portfolio</b> before the 2030 all-electric deadline closes the window.</h1>
+    <p class="sub rv">Europe has tipped to electrified, yet Lexus's parent pool runs the <b>lowest BEV share of any major (12%)</b>. Its conquest engine — the LBX, the #2 Lexus model in Europe — is <b>hybrid-only</b>. A serene-premium and an electric-conquest white space sit open. The recommendation: act on both, sequenced, on the next-gen platform.</p>
+    <div class="recpills rv">
+      <div class="pill b1"><div class="ph">Phase 1 · 2027–28</div><div class="pn">Lexus 'LZ' — electric conquest</div><div class="pd">Compact BEV (B/C), €35–45k*. Defends the LBX funnel; volume &amp; brand entry.</div></div>
+      <div class="pill b2"><div class="ph">Phase 2 · 2028–30</div><div class="pn">Lexus 'Serene' — ultra-comfort flagship</div><div class="pd">Upper-D/E BEV, €70–90k*. Owns the serene-premium white space; margin &amp; halo.</div></div>
+    </div>
+    <div class="kpis rv">
+      <div class="kpi"><div class="v" data-count="20">0<small>%</small></div><div class="l">EU BEV share, Jan–May 2026 (was 15.3% a year earlier)</div></div>
+      <div class="kpi"><div class="v" data-count="12">0<small>%</small></div><div class="l">Toyota pool BEV share — lowest of all major pools</div></div>
+      <div class="kpi"><div class="v" data-count="23018" data-comma="1">0</div><div class="l">LBX units in Europe, 2024 — the #2 Lexus model, hybrid-only</div></div>
+      <div class="kpi"><div class="v">100<small>%</small></div><div class="l">Lexus BEV target for Europe by 2030</div></div>
+    </div>
+  </header>
+
+  <!-- MARKET -->
+  <section id="market">
+    <div class="shead rv"><span class="sidx">01</span><span class="stitle serif">Market Context — Europe</span></div>
+    <p class="slede rv">Europe's powertrain mix has tipped to electrified — <b>BEV at 20% and rising</b> — while hybrids at 38% keep a transition window open through 2030.</p>
+
+    <div class="grid g12">
+      <div class="card rv">
+        <div class="exlbl"><b>EXHIBIT 1</b> · EU BEV share trajectory to the 2030 all-electric goal (%)</div>
+        <div id="c-traj"></div>
+      </div>
+      <div class="card rv">
+        <div class="exlbl"><b>EXHIBIT 2</b> · Powertrain mix, May 2026 YTD (%)</div>
+        <div id="c-mix"></div>
+        <div class="exlbl" style="margin:16px 0 12px"><b>EXHIBIT 3</b> · BEV growth, top markets (% YoY, YTD)</div>
+        <div id="c-growth"></div>
+      </div>
+    </div>
+    <div class="sowhat rv"><b>SO WHAT</b><span class="t">The transition is real but not complete — hybrids still lead. That gives Lexus a narrow, closing window to enter BEV with differentiated concepts before the segment commoditises around price and spec.</span></div>
+  </section>
+
+  <!-- COMPETITION -->
+  <section id="compete">
+    <div class="shead rv"><span class="sidx">02</span><span class="stitle serif">Competitive Benchmarking</span></div>
+    <p class="slede rv">On BEV penetration Lexus's parent pool ranks <b>last among the majors</b> — Tesla, BYD and the Germans hold a 15–30-point head-start.</p>
+
+    <div class="grid g12">
+      <div class="card rv">
+        <div class="exlbl"><b>EXHIBIT 4</b> · BEV share of manufacturer pool, May 2026 (%)</div>
+        <div id="c-pool"></div>
+      </div>
+      <div class="card rv">
+        <div class="exlbl"><b>EXHIBIT 5</b> · Premium BEV competitive set</div>
+        <table id="benchtable"></table>
+        <div class="dlab" style="margin-top:10px">*Illustrative price bands, indicative EU on-road ranges.</div>
+      </div>
+    </div>
+    <div class="sowhat rv"><b>SO WHAT</b><span class="t">Lexus cannot out-spec Tesla/BYD or out-badge the Germans, and starts from the lowest BEV base. Competing on the same axes means losing — the winning move is a different axis (craft &amp; ownership) in segments rivals under-serve.</span></div>
+  </section>
+
+  <!-- WHITE SPACE -->
+  <section id="whitespace">
+    <div class="shead rv"><span class="sidx">03</span><span class="stitle serif">White-Space Analysis</span></div>
+    <p class="slede rv">Rivals cluster on performance and price — the <b>serene-craft premium</b> and the <b>electric premium-casual</b> spaces are structurally open to Lexus.</p>
+
+    <div class="grid g12">
+      <div class="card rv">
+        <div class="exlbl"><b>EXHIBIT 6</b> · Premium EV positioning — price vs. experience</div>
+        <div id="c-pos"></div>
+      </div>
+      <div class="card rv">
+        <div class="exlbl"><b>EXHIBIT 7</b> · Where Lexus has the right to win</div>
+        <div class="rtw" id="rtw"></div>
+      </div>
+    </div>
+    <div class="sowhat rv"><b>SO WHAT</b><span class="t">Two gaps, two concepts: a serene-premium flagship and an electric premium-casual conquest car — both built on axes Lexus already owns and rivals cannot easily copy.</span></div>
+  </section>
+
+  <!-- CONCEPTS -->
+  <section id="concepts">
+    <div class="shead rv"><span class="sidx">04</span><span class="stitle serif">Concept Planning</span></div>
+    <p class="slede rv">The analysis converges on a <b>two-model BEV portfolio</b>: 'Serene' to own the premium white space, 'LZ' to defend the conquest funnel.</p>
+    <div class="concepts" id="conceptcards"></div>
+    <div class="plogic rv"><b>PORTFOLIO LOGIC</b>One platform, two roles. 'LZ' carries volume and renews the conquest funnel as the LBX's hybrid entry point disappears; 'Serene' captures margin and re-establishes brand leadership at the top. Shared architecture de-risks the investment.</div>
+  </section>
+
+  <!-- BUSINESS CASE -->
+  <section id="case">
+    <div class="shead rv"><span class="sidx">05</span><span class="stitle serif">Business Case &amp; Phasing</span></div>
+    <p class="slede rv">Sequenced 2026–2030 on the existing platform roadmap, the portfolio <b>defends the conquest funnel first</b>, then adds a margin-accretive halo.</p>
+
+    <div class="card rv" style="margin-bottom:16px">
+      <div class="exlbl"><b>EXHIBIT 8</b> · Roadmap alignment — riding the platform Lexus is already building</div>
+      <div class="tl" id="timeline"></div>
+    </div>
+    <div class="grid g12">
+      <div class="card rv">
+        <div class="exlbl"><b>EXHIBIT 9</b> · Illustrative BEV volume build — portfolio contribution (indexed units)</div>
+        <div id="c-vol"></div>
+      </div>
+      <div class="card rv">
+        <div class="exlbl"><b>EXHIBIT 10</b> · Investment logic &amp; key assumptions</div>
+        <div class="ilist" id="invlist"></div>
+      </div>
+    </div>
+    <div class="sowhat rv"><b>SO WHAT</b><span class="t">Because both cars ride the next-gen architecture, this is an incremental — not greenfield — commitment: shared platform, solid-state timing for range, and volume-before-halo sequencing that answers the near-term LBX risk first.</span></div>
+  </section>
+
+  <!-- GOVERNANCE -->
+  <section id="gov">
+    <div class="shead rv"><span class="sidx">06</span><span class="stitle serif">Validation · Risk · Governance</span></div>
+    <p class="slede rv">Recommendation: greenlight a <b>90-day concept-validation sprint</b> now; three gate decisions unlock the capital commitment.</p>
+
+    <div class="grid g2">
+      <div class="card rv">
+        <div class="exlbl"><b>EXHIBIT 11</b> · Concept-validation plan (90 days)</div>
+        <div class="ilist" id="research"></div>
+        <div class="exlbl" style="margin:18px 0 12px"><b>EXHIBIT 12</b> · Decision KPIs</div>
+        <div class="kgrid" id="kpis2"></div>
+      </div>
+      <div class="card rv">
+        <div class="exlbl"><b>EXHIBIT 13</b> · Risk register</div>
+        <table id="risktable"></table>
+        <div class="exlbl" style="margin:18px 0 12px"><b>EXHIBIT 14</b> · Next steps — three gate decisions</div>
+        <div class="gates" id="gates"></div>
+      </div>
+    </div>
+    <div class="ask rv"><b>DECISION REQUIRED</b><span>Approve the validation sprint and reserve a platform slot — so the conquest BEV can land before the LBX's hybrid window closes.</span></div>
+  </section>
+
+  <footer>
+    <div class="src">
+      SOURCE · ACEA new-car registrations, May 2026 YTD · ICCT European Car Market Monitor, Feb–May 2026 · EAFO, 2026<br>
+      Lexus / Toyota Motor Europe disclosures, 2024–2026 · company reports · author analysis
+    </div>
+    <div class="dis">Illustrative analysis on public data — not official Toyota figures. Concept names, segments, price bands, volumes and phasing are working hypotheses prepared for internal discussion, not company plans or forecasts.</div>
+    <div class="by">Prepared by <b>Kumaraguru Vedagiri</b> · Product Strategy &amp; Concept Planning</div>
+  </footer>
+</main>
+
+<script>
+/* ---------------- DATA ---------------- */
+const DATA = {
+  traj:[["2023",14],["2024",15],["2025",15.3],["H1'26",20],["2026E",25],["2030",100]],
+  mix:[["BEV",20,"var(--bronze)"],["Hybrid",37.8,"var(--steel)"],["PHEV",9.7,"var(--steel2)"],["Petrol",22.4,"#4A515C"],["Diesel",7.6,"#343A42"],["Other",2.5,"#24272E"]],
+  growth:[["Italy",75.7],["France",55.4],["Germany",40.9]],
+  pool:[["Tesla",41],["BYD",35],["Kia",32],["Mercedes",32],["BMW",29],["EU avg",22],["Stellantis",14],["SAIC",13],["Toyota",12]],
+  bench:[
+    ["Tesla","€40–60k","Software · charging · scale","Pool 41% BEV","Aging line · price swings",0],
+    ["BMW","€55–90k+","Performance · badge","Pool 29%","ICE still core",0],
+    ["Mercedes","€60–110k+","Comfort · tech","Pool 32%","EQ demand soft · CO₂ gap",0],
+    ["Audi","€45–90k","Premium tech","VW group","Overlap w/ VW brands",0],
+    ["Polestar","€50–75k","Minimalist design","Scaling","Scale · funding",0],
+    ["Chinese premium","€35–70k","Spec · value","BYD pool 35%","Tariffs (≤45%) · trust",0],
+    ["Lexus","€50–75k","Craft · quiet · reliability","Pool 12% — last","Conquest = hybrid-only",1]
+  ],
+  pos:[ // x(price 0-1), z(craft 0-1), type 0 rival /1 lexus /2 concept
+    ["Tesla",.5,.28,0],["BMW",.72,.42,0],["Mercedes",.82,.55,0],["Audi",.64,.4,0],
+    ["Polestar",.55,.5,0],["Chinese",.36,.34,0],["Lexus today",.6,.64,1],["'Serene'",.85,.85,2],["'LZ'",.34,.82,2]
+  ],
+  rtw:[
+    ["Takumi craftsmanship","Hand-finished quality &amp; materials — decades of brand equity German badges and Chinese newcomers can't replicate."],
+    ["Omotenashi ownership","Hospitality-grade service &amp; concierge — a relationship, not a transaction."],
+    ["Class-leading refinement","Near-silent BEV cabins (RZ noise engineering) — comfort as the product, not lap-times."],
+    ["Reliability &amp; trust","Top-ranked dependability — decisive for cautious, first-time premium-EV buyers."]
+  ],
+  concepts:[
+    {cls:"serene",tag:"Phase 2 · Halo &amp; Margin",name:"Lexus 'Serene'",sub:"Ultra-comfort flagship BEV",rows:[
+      ["Segment","Upper-D / E premium comfort",0],["Price band*","€70–90k",1],["Role","Brand halo · margin · white-space claim",0],
+      ["Volume*","Niche-halo (equity anchor)",0],["Proof points","Rear-lounge serenity · takumi cabin · omotenashi ownership · effortless long range",0],
+      ["Platform","Next-gen BEV (giga-cast · Arene OS) + solid-state 2027–28 for range",0]]},
+    {cls:"lz",tag:"Phase 1 · Volume &amp; Funnel",name:"Lexus 'LZ'",sub:"Electric conquest crossover",rows:[
+      ["Segment","B / C compact urban BEV",0],["Price band*","€35–45k",1],["Role","Conquest volume · brand entry funnel",0],
+      ["Volume*","Conquest-scale (replaces LBX role)",0],["Proof points","'Real Lexus, smaller' · spindle-body EV design · urban range · full Lexus ownership",0],
+      ["Platform","Next-gen BEV platform · shared componentry with Serene",0]]}
+  ],
+  timeline:[
+    ["2026","Next-gen BEV platform debuts (LF-ZC-inspired · giga-cast · Arene OS); all-electric ES"],
+    ["2027–28","LZ conquest BEV launches; solid-state batteries begin — long-range enabler"],
+    ["2028–30","Serene flagship launches; portfolio complete"],
+    ["2030","100% BEV sales in Europe — deadline met"]
+  ],
+  vol:[["2027",15,0],["2028",45,8],["2029",70,18],["2030",85,25]], // LZ, Serene
+  inv:[
+    ["Shared platform","Both models ride the next-gen BEV architecture — incremental, not greenfield, capex."],
+    ["Solid-state timing","2027–28 cell availability underwrites the flagship's effortless-range promise."],
+    ["Sequencing","Volume/funnel first (near-term LBX risk), halo second (equity, higher margin)."],
+    ["Sourcing gate","European BEV assembly to be assessed vs. Japan-build (LBX today) — cost, tariff, speed."]
+  ],
+  research:[
+    ["Focus groups ×3","LBX conquest buyers · German-brand luxury owners · affluent first-time EV buyers"],
+    ["Conjoint &amp; pricing","Willingness-to-pay for craft vs. spec; van Westendorp across both price bands"],
+    ["Design clinics","Spindle-body EV design &amp; serene-cabin proposition testing"]
+  ],
+  kpis2:[
+    ["Conquest rate","% buyers new to Lexus"],["BEV mix","Share of Lexus EU volume"],
+    ["Transaction price","€ vs. segment average"],["Consideration","Brand funnel lift, target segments"]
+  ],
+  risk:[
+    ["Cannibalising RZ / ES","m","MED","Distinct segments &amp; price ladders; portfolio role clarity"],
+    ["Chinese price pressure","h","HIGH","Compete on craft &amp; ownership, not price; leverage tariffs"],
+    ["Solid-state slips","m","MED","Launch on current cells; upgrade range at facelift"],
+    ["BEV demand plateaus","m","MED","Hybrid bridge retained to 2030; phased BEV commitment"]
+  ],
+  gates:[
+    ["GATE 1","Confirm target segments &amp; concept priority (LZ-first)"],
+    ["GATE 2","Lock price ladder &amp; volume plan vs. RZ / ES / LM"],
+    ["GATE 3","Decide sourcing — European assembly vs. Japan build"]
+  ]
+};
+
+/* ---------------- TICKER ---------------- */
+const tks=[["EU BEV","20%","up"],["HEV","37.8%",""],["PHEV","9.7%",""],["EU MKT YTD","+4%","up"],
+  ["TOYOTA POOL BEV","12%","dn"],["TESLA POOL","41%",""],["MERCEDES","32%",""],["BMW","29%",""],
+  ["BYD","35%",""],["LBX 2024","23,018",""],["LEXUS EU 2024","88,000",""],["LEXUS 2030","100% BEV","up"]];
+const tk=document.getElementById("tk");
+let th="";
+for(let r=0;r<2;r++){ tks.forEach(t=>{ th+=`<span class="it">${t[0]} <b class="${t[2]}">${t[1]}</b>${t[2]==="up"?" ▲":t[2]==="dn"?" ▼":""}</span>`; }); }
+tk.innerHTML=th;
+
+/* ---------------- helpers ---------------- */
+const NS="http://www.w3.org/2000/svg";
+function cvar(v){ return v && v.startsWith("var(")? getComputedStyle(document.documentElement).getPropertyValue(v.slice(4,-1)).trim() : v; }
+function svg(w,h){ return `<svg viewBox="0 0 ${w} ${h}">`; }
+
+/* Line chart — trajectory */
+function lineChart(el,data){
+  const W=560,H=250,pl=34,pr=20,pt=24,pb=34;
+  const xs=(i)=>pl+(W-pl-pr)*(i/(data.length-1));
+  const ys=(v)=>H-pb-(H-pt-pb)*(v/100);
+  let g=svg(W,H);
+  [0,25,50,75,100].forEach(v=>{ g+=`<line class="gridln" x1="${pl}" y1="${ys(v)}" x2="${W-pr}" y2="${ys(v)}"/><text class="dlab" x="${pl-6}" y="${ys(v)+3}" text-anchor="end">${v}</text>`; });
+  let pts=data.map((d,i)=>`${xs(i)},${ys(d[1])}`).join(" ");
+  let area=`M ${xs(0)},${ys(0)} `+data.map((d,i)=>`L ${xs(i)},${ys(d[1])}`).join(" ")+` L ${xs(data.length-1)},${ys(0)} Z`;
+  g+=`<path d="${area}" fill="var(--bronze)" opacity="0.09"/>`;
+  g+=`<polyline class="tline" points="${pts}" fill="none" stroke="var(--bronze)" stroke-width="2.5" stroke-linejoin="round"/>`;
+  data.forEach((d,i)=>{
+    const concept=(d[0]==="2030");
+    g+=`<circle cx="${xs(i)}" cy="${ys(d[1])}" r="${concept?5.5:4}" fill="${concept?'var(--bronze)':'var(--bg)'}" stroke="var(--bronze)" stroke-width="2"/>`;
+    g+=`<text class="vlab" x="${xs(i)}" y="${ys(d[1])-11}" text-anchor="middle">${d[1]}</text>`;
+    g+=`<text class="clab" x="${xs(i)}" y="${H-pb+16}" text-anchor="middle">${d[0]}</text>`;
+  });
+  g+=`<text class="dlab" x="${W-pr}" y="${ys(100)-10}" text-anchor="end" fill="var(--bronze)">Lexus target 2030</text>`;
+  el.innerHTML=g+"</svg>";
+  // animate line draw
+  const line=el.querySelector(".tline");
+  const len=line.getTotalLength(); line.style.strokeDasharray=len; line.style.strokeDashoffset=len;
+  requestAnimationFrame(()=>{ line.style.transition="stroke-dashoffset 1.6s ease"; line.style.strokeDashoffset=0; });
+}
+
+/* 100% stacked bar — mix */
+function mixBar(el,data){
+  const W=560,H=64,y=8,h=30; let x=0; const tot=data.reduce((a,d)=>a+d[1],0);
+  let g=svg(W,H+40);
+  data.forEach(d=>{ const w=(W)*(d[1]/tot); g+=`<rect class="mixseg" x="${x}" y="${y}" width="${w}" height="${h}" fill="${d[2]}" rx="2"/>`;
+    if(w>34) g+=`<text class="dlab" x="${x+w/2}" y="${y+h/2+3}" text-anchor="middle" fill="#0a0b0d" font-weight="600">${d[1]}</text>`; x+=w; });
+  // legend
+  let lx=0,ly=y+h+22;
+  data.forEach(d=>{ g+=`<rect x="${lx}" y="${ly-8}" width="9" height="9" fill="${d[2]}" rx="1.5"/><text class="clab" x="${lx+14}" y="${ly}" >${d[0]} ${d[1]}%</text>`; lx+=Math.max(80,(d[0].length*7)+58); if(lx>W-70){lx=0;ly+=18;} });
+  el.innerHTML=g+"</svg>";
+}
+
+/* columns — growth */
+function colChart(el,data,color,max,suffix){
+  const W=560,H=170,pb=30,pt=18,bw=70,gap=(W-data.length*bw)/(data.length+1);
+  const ys=(v)=>H-pb-(H-pt-pb)*(v/max);
+  let g=svg(W,H);
+  g+=`<line class="axoff" x1="0" y1="${H-pb}" x2="${W}" y2="${H-pb}"/>`;
+  data.forEach((d,i)=>{ const x=gap+i*(bw+gap), top=ys(d[1]);
+    g+=`<rect class="gcol" x="${x}" y="${H-pb}" width="${bw}" height="0" fill="${color}" rx="3" data-top="${top}" data-h="${H-pb-top}"/>`;
+    g+=`<text class="vlab" x="${x+bw/2}" y="${top-8}" text-anchor="middle">+${d[1]}${suffix||"%"}</text>`;
+    g+=`<text class="clab" x="${x+bw/2}" y="${H-pb+16}" text-anchor="middle">${d[0]}</text>`; });
+  el.innerHTML=g+"</svg>";
+}
+
+/* horizontal bars — pool share */
+function hbar(el,data){
+  const rowH=30, W=560, H=data.length*rowH+10, lab=76, pr=42, max=48;
+  const xs=(v)=>lab+(W-lab-pr)*(v/max);
+  let g=svg(W,H);
+  data.forEach((d,i)=>{ const y=i*rowH+8, hl=(d[0]==="Toyota"), avg=(d[0]==="EU avg");
+    const col=hl?"var(--bronze)":(avg?"var(--dim)":"var(--steel)");
+    g+=`<text class="clab" x="${lab-8}" y="${y+14}" text-anchor="end" fill="${hl?'var(--bronze)':'var(--muted)'}" font-weight="${hl?600:400}">${d[0]}</text>`;
+    g+=`<rect x="${lab}" y="${y+3}" width="${W-lab-pr}" height="16" fill="var(--line2)" rx="3"/>`;
+    g+=`<rect class="hb" x="${lab}" y="${y+3}" width="0" height="16" fill="${col}" rx="3" data-w="${xs(d[1])-lab}"/>`;
+    g+=`<text class="vlab" x="${xs(d[1])+6}" y="${y+15}" fill="${hl?'var(--bronze)':'var(--text)'}">${d[1]}</text>`; });
+  el.innerHTML=g+"</svg>";
+}
+
+/* 2x2 scatter — positioning */
+function scatter(el,data){
+  const W=560,H=380,pl=30,pr=20,pt=18,pb=34;
+  const px=(x)=>pl+(W-pl-pr)*x, py=(z)=>H-pb-(H-pt-pb)*z;
+  let g=svg(W,H);
+  // white-space zones
+  g+=`<rect x="${px(.6)}" y="${py(1)}" width="${px(.98)-px(.6)}" height="${py(.66)-py(1)}" fill="var(--bronze)" opacity="0.10" stroke="var(--bronze)" stroke-dasharray="4 3" rx="6"/>`;
+  g+=`<text class="dlab" x="${px(.79)}" y="${py(.96)}" text-anchor="middle" fill="var(--bronze)">SERENE-PREMIUM</text>`;
+  g+=`<rect x="${px(.16)}" y="${py(1)}" width="${px(.5)-px(.16)}" height="${py(.7)-py(1)}" fill="var(--steel)" opacity="0.12" stroke="var(--steel)" stroke-dasharray="4 3" rx="6"/>`;
+  g+=`<text class="dlab" x="${px(.33)}" y="${py(.96)}" text-anchor="middle" fill="var(--steel2)">ELECTRIC PREMIUM-CASUAL</text>`;
+  // axes
+  g+=`<line class="axoff" x1="${pl}" y1="${H-pb}" x2="${W-pr}" y2="${H-pb}"/><line class="axoff" x1="${pl}" y1="${pt}" x2="${pl}" y2="${H-pb}"/>`;
+  g+=`<line class="gridln" x1="${px(.5)}" y1="${pt}" x2="${px(.5)}" y2="${H-pb}" stroke-dasharray="3 3"/><line class="gridln" x1="${pl}" y1="${py(.5)}" x2="${W-pr}" y2="${py(.5)}" stroke-dasharray="3 3"/>`;
+  g+=`<text class="clab" x="${W-pr}" y="${H-pb+16}" text-anchor="end">PRICE →</text>`;
+  g+=`<text class="clab" x="${pl-6}" y="${pt+2}" transform="rotate(-90 ${pl-6} ${pt+2})">EXPERIENCE / CRAFT →</text>`;
+  data.forEach((d,i)=>{ const x=px(d[1]),y=py(d[2]),t=d[3],c=(t===2),l=(t===1);
+    const col=c?"var(--bronze)":(l?"#C2A46E":"var(--steel2)");
+    if(c) g+=`<circle class="pdot" cx="${x}" cy="${y}" r="16" fill="none" stroke="var(--bronze)" stroke-width="1.5" opacity="0.5" style="transform-origin:${x}px ${y}px"/>`;
+    g+=`<circle class="pdot" cx="${x}" cy="${y}" r="${c?7:5.5}" fill="${col}" opacity="${l?0.85:1}" style="transform-origin:${x}px ${y}px;transition-delay:${i*60}ms"/>`;
+    const left=d[1]>0.6;
+    g+=`<text class="${c?'vlab':'clab'}" x="${left?x-11:x+11}" y="${y+4}" text-anchor="${left?'end':'start'}" fill="${c?'var(--bronze)':(l?'var(--text)':'var(--muted)')}">${d[0]}</text>`;
+  });
+  el.innerHTML=g+"</svg>";
+}
+
+/* stacked columns — volume */
+function stackCol(el,data){
+  const W=560,H=220,pb=44,pt=18,bw=64; const gap=(W-data.length*bw)/(data.length+1);
+  const max=Math.max(...data.map(d=>d[1]+d[2]))*1.1;
+  const hpx=(v)=>(H-pt-pb)*(v/max);
+  let g=svg(W,H);
+  g+=`<line class="axoff" x1="0" y1="${H-pb}" x2="${W}" y2="${H-pb}"/>`;
+  data.forEach((d,i)=>{ const x=gap+i*(bw+gap); const h1=hpx(d[1]),h2=hpx(d[2]);
+    g+=`<rect class="sc" x="${x}" y="${H-pb}" width="${bw}" height="0" data-y="${H-pb-h1}" data-h="${h1}" fill="var(--steel)" rx="2"/>`;
+    g+=`<rect class="sc" x="${x}" y="${H-pb}" width="${bw}" height="0" data-y="${H-pb-h1-h2}" data-h="${h2}" fill="var(--bronze)" rx="2"/>`;
+    g+=`<text class="clab" x="${x+bw/2}" y="${H-pb+16}" text-anchor="middle">${d[0]}</text>`; });
+  // legend
+  g+=`<rect x="0" y="${H-16}" width="9" height="9" fill="var(--steel)" rx="1.5"/><text class="clab" x="14" y="${H-8}">LZ (conquest)</text>`;
+  g+=`<rect x="130" y="${H-16}" width="9" height="9" fill="var(--bronze)" rx="1.5"/><text class="clab" x="144" y="${H-8}">Serene (halo)</text>`;
+  el.innerHTML=g+"</svg>";
+}
+
+/* ---------------- build static blocks ---------------- */
+// bench table
+(function(){ let h="<thead><tr><th>Brand</th><th>Price band*</th><th>Plays on</th><th>EU BEV posture</th><th>Key vulnerability</th></tr></thead><tbody>";
+  DATA.bench.forEach(r=>{ h+=`<tr class="${r[5]?'lexrow':''}"><td class="bn">${r[0]}</td><td class="num">${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`; });
+  document.getElementById("benchtable").innerHTML=h+"</tbody>"; })();
+// rtw
+document.getElementById("rtw").innerHTML=DATA.rtw.map(r=>`<div class="it"><span class="dot"></span><div><h4>${r[0]}</h4><p>${r[1]}</p></div></div>`).join("");
+// concept cards
+document.getElementById("conceptcards").innerHTML=DATA.concepts.map(c=>`
+  <div class="ccard ${c.cls}"><div class="top"><div class="ctag">${c.tag}</div><div class="cname serif">${c.name}</div><div class="csub">${c.sub}</div></div>
+  <div class="rows">${c.rows.map(r=>`<div class="crow"><div class="k">${r[0]}</div><div class="val ${r[2]?'big':''}">${r[1]}</div></div>`).join("")}</div></div>`).join("");
+// timeline
+document.getElementById("timeline").innerHTML=DATA.timeline.map(t=>`<div class="n"><div class="d"></div><div class="y">${t[0]}</div><div class="tx">${t[1]}</div></div>`).join("");
+// inv
+document.getElementById("invlist").innerHTML=DATA.inv.map(r=>`<div class="it"><span class="dot"></span><span><b>${r[0]}</b> — ${r[1]}</span></div>`).join("");
+// research
+document.getElementById("research").innerHTML=DATA.research.map(r=>`<div class="it"><span class="dot"></span><span><b>${r[0]}</b> · ${r[1]}</span></div>`).join("");
+// kpis2
+document.getElementById("kpis2").innerHTML=DATA.kpis2.map(k=>`<div class="kbox"><h4>${k[0]}</h4><p>${k[1]}</p></div>`).join("");
+// risk
+(function(){ let h="<thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead><tbody>";
+  DATA.risk.forEach(r=>{ h+=`<tr><td class="bn">${r[0]}</td><td><span class="chip ${r[1]}">${r[2]}</span></td><td>${r[3]}</td></tr>`; });
+  document.getElementById("risktable").innerHTML=h+"</tbody>"; })();
+// gates
+document.getElementById("gates").innerHTML=DATA.gates.map(g=>`<div class="gate"><span class="g">${g[0]}</span><p>${g[1]}</p></div>`).join("");
+
+/* ---------------- reveal + chart triggers ---------------- */
+const built={};
+function build(id){
+  if(built[id])return; built[id]=1;
+  if(id==="market"){ lineChart(document.getElementById("c-traj"),DATA.traj); mixBar(document.getElementById("c-mix"),DATA.mix); colChart(document.getElementById("c-growth"),DATA.growth,"var(--steel)",90); animateBars(); }
+  if(id==="compete"){ hbar(document.getElementById("c-pool"),DATA.pool); animateBars(); }
+  if(id==="whitespace"){ scatter(document.getElementById("c-pos"),DATA.pos); requestAnimationFrame(()=>document.querySelectorAll(".pdot").forEach(p=>p.classList.add("show"))); }
+  if(id==="case"){ stackCol(document.getElementById("c-vol"),DATA.vol); animateBars(); }
+}
+function animateBars(){
+  requestAnimationFrame(()=>{
+    document.querySelectorAll(".gcol").forEach(b=>{ b.style.transition="all 1s cubic-bezier(.2,.8,.2,1)"; b.setAttribute("y",b.dataset.top); b.setAttribute("height",b.dataset.h); });
+    document.querySelectorAll(".hb").forEach((b,i)=>{ b.style.transition=`width .9s ${i*50}ms cubic-bezier(.2,.8,.2,1)`; b.setAttribute("width",b.dataset.w); });
+    document.querySelectorAll(".sc").forEach((b,i)=>{ b.style.transition=`all .9s ${i*40}ms cubic-bezier(.2,.8,.2,1)`; b.setAttribute("y",b.dataset.y); b.setAttribute("height",b.dataset.h); });
+  });
+}
+// dot animation css
+const st=document.createElement("style");
+st.textContent=".pdot{opacity:0;transform:scale(0);transition:opacity .5s ease,transform .5s cubic-bezier(.2,1.2,.3,1)}.pdot.show{opacity:1;transform:scale(1)}";
+document.head.appendChild(st);
+
+// count-up
+function countUp(elm){
+  const target=parseFloat(elm.dataset.count), comma=elm.dataset.comma;
+  const small=elm.querySelector("small"); const suf=small?small.outerHTML:"";
+  let t0=null,dur=1300;
+  function step(ts){ if(!t0)t0=ts; const p=Math.min((ts-t0)/dur,1); const e=1-Math.pow(1-p,3);
+    let v=target*e; v=(target%1!==0)?v.toFixed(1):Math.round(v);
+    if(comma)v=Number(v).toLocaleString("en-US");
+    elm.innerHTML=v+suf; if(p<1)requestAnimationFrame(step); }
+  requestAnimationFrame(step);
+}
+
+const io=new IntersectionObserver((es)=>{ es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("in");
+  if(e.target.dataset.count!==undefined)countUp(e.target);
+  const sec=e.target.closest("section"); if(sec)build(sec.id);
+  io.unobserve(e.target);} }); },{threshold:0.14});
+document.querySelectorAll(".rv,[data-count]").forEach(x=>io.observe(x));
+// hero counts fire immediately-ish
+document.querySelectorAll("#hero [data-count]").forEach(x=>{ const r=x.getBoundingClientRect(); if(r.top<innerHeight)countUp(x); });
+
+/* progress + nav active */
+const prog=document.getElementById("prog");
+const secs=[...document.querySelectorAll("section")]; const links=[...document.querySelectorAll("#nav .links a")];
+addEventListener("scroll",()=>{
+  const h=document.documentElement; const sc=h.scrollTop/(h.scrollHeight-h.clientHeight);
+  prog.style.width=(sc*100)+"%";
+  let cur=""; secs.forEach(s=>{ if(scrollY>=s.offsetTop-140)cur=s.id; });
+  links.forEach(a=>a.classList.toggle("on",a.getAttribute("href")==="#"+cur));
+},{passive:true});
+</script>
+</body>
+</html>
